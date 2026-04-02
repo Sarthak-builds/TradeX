@@ -14,25 +14,27 @@ import {
   FormMessage,
 } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
-import { useLogin } from '../api/auth.api';
-import { loginSchema, LoginValues } from '../types';
+import { useRegister } from '../api/auth.api';
+import { registerSchema, RegisterValues } from '../types';
 
-export function LoginForm() {
-  const loginMutation = useLogin();
+export function RegisterForm() {
+  const registerMutation = useRegister();
 
-  const form = useForm<LoginValues>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<RegisterValues>({
+    resolver: zodResolver(registerSchema),
     defaultValues: {
+      name: '',
       email: '',
       password: '',
+      confirmPassword: '',
     },
   });
 
-  function onSubmit(values: LoginValues) {
-    loginMutation.mutate(values);
+  function onSubmit(values: RegisterValues) {
+    registerMutation.mutate(values);
   }
 
-  const handleGoogleLogin = () => {
+  const handleGoogleSignup = () => {
     // Standard OAuth redirection to backend
     window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
   };
@@ -43,7 +45,7 @@ export function LoginForm() {
         variant="outline" 
         type="button" 
         className="w-full" 
-        onClick={handleGoogleLogin}
+        onClick={handleGoogleSignup}
       >
         <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
           <path
@@ -59,7 +61,7 @@ export function LoginForm() {
             fill="#FBBC05"
           />
           <path
-            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
             fill="#EA4335"
           />
         </svg>
@@ -79,23 +81,41 @@ export function LoginForm() {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="name@example.com" 
-                    {...field} 
-                    disabled={loginMutation.isPending}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Full Name</FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder="John Doe" 
+                  {...field} 
+                  disabled={registerMutation.isPending}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder="name@example.com" 
+                  {...field} 
+                  disabled={registerMutation.isPending}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="password"
@@ -107,26 +127,45 @@ export function LoginForm() {
                     type="password" 
                     placeholder="••••••••" 
                     {...field} 
-                    disabled={loginMutation.isPending}
+                    disabled={registerMutation.isPending}
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button 
-            type="submit" 
-            className="w-full"
-            disabled={loginMutation.isPending}
-          >
-            {loginMutation.isPending ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              'Login'
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Confirm Password</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="password" 
+                    placeholder="••••••••" 
+                    {...field} 
+                    disabled={registerMutation.isPending}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-          </Button>
-        </form>
-      </Form>
+          />
+        </div>
+        <Button 
+          type="submit" 
+          className="w-full mt-2"
+          disabled={registerMutation.isPending}
+        >
+          {registerMutation.isPending ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            'Create Account'
+          )}
+        </Button>
+      </form>
+    </Form>
     </div>
   );
 }

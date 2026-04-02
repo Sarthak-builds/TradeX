@@ -24,19 +24,14 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       setAuth: (user, token) => {
         set({ user, token, isAuthenticated: true });
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('token', token);
-        }
       },
       logout: () => {
         set({ user: null, token: null, isAuthenticated: false });
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('token');
-        }
       },
     }),
     {
       name: 'auth-storage',
+      partialize: (state) => ({ user: state.user }), // Only persist the user profile
     }
   )
 );
