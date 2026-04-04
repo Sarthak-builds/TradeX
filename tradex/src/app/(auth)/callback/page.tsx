@@ -43,7 +43,7 @@ export default function AuthCallbackPage() {
           <Loader2 className="w-10 h-10 text-primary animate-spin" />
           <div className="space-y-1">
             <h1 className="text-xl font-bold tracking-tight">Authenticating...</h1>
-            <p className="text-sm text-muted-foreground">Synchronizing your terminal session.</p>
+            {/* <p className="text-sm text-muted-foreground">Synchronizing your terminal session.</p> */}
           </div>
         </div>
       </div>
