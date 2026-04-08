@@ -31,7 +31,10 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
-      partialize: (state) => ({ user: state.user }), // Only persist the user profile
+      partialize: (state) => ({ 
+        user: state.user,
+        isAuthenticated: state.isAuthenticated
+      }), // Persist user profile and auth flag, but NOT token
     }
   )
 );

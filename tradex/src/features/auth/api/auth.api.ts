@@ -15,7 +15,8 @@ export const useLogin = () => {
       return data; // Expected: { id, email, name, token }
     },
     onSuccess: (data) => {
-      setAuth({ id: data.id, email: data.email, name: data.name }, data.token);
+      const user = data.user || data;
+      setAuth({ id: user.id, email: user.email, name: user.name, role: user.role }, data.token);
       toast.success('Login successful!');
       router.push('/dashboard');
     },
@@ -35,11 +36,11 @@ export const useRegister = () => {
       const { data } = await axiosInstance.post('/auth/register', values);
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       toast.success('Account created!', {
         description: 'Initializing your terminal...',
       });
-      router.push('/check-email');
+      router.push(`/check-email?email=${encodeURIComponent(variables.email)}`);
     },
     onError: (error: any) => {
       toast.error('Registration failed', {
@@ -51,8 +52,8 @@ export const useRegister = () => {
 
 export const useResendVerification = () => {
   return useMutation({
-    mutationFn: async () => {
-      const { data } = await axiosInstance.post('/auth/resend-verification');
+    mutationFn: async (email: string) => {
+      const { data } = await axiosInstance.post('/auth/resend-verification', { email });
       return data;
     },
     onSuccess: () => {
@@ -63,6 +64,40 @@ export const useResendVerification = () => {
     onError: (error: any) => {
       toast.error('Failed to resend email.', {
         description: error.response?.data?.message || 'Try again in a moment.',
+      });
+    },
+  });
+};
+
+export const useVerifyEmail = () => {
+  const router = useRouter();
+  const setAuth = useAuthStore((state) => state.setAuth);
+
+  return useMutation({
+    mutationFn: async (token: string) => {
+      const { data } = await axiosInstance.post('/auth/verify', { token });
+      return data;
+    },
+    onSuccess: (data) => {
+      // If the backend returns auth data directly upon verification
+      if (data?.token) {
+        const user = data.user || data;
+        setAuth({ id: user.id, email: user.email, name: user.name, role: user.role }, data.token);
+        toast.success('Email Verified Successfully!', {
+          description: 'Welcome to TradeX!',
+        });
+        router.push('/dashboard');
+      } else {
+        // Fallback in case backend doesn't return login payload
+        toast.success('Email Verified Successfully!', {
+          description: 'You can now log in to your account.',
+        });
+        router.push('/login');
+      }
+    },
+    onError: (error: any) => {
+      toast.error('Verification failed', {
+        description: error.response?.data?.message || 'Invalid or expired code.',
       });
     },
   });

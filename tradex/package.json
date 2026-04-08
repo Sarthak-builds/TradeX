@@ -4,8 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:stage": "env-cmd -f .env.stage next dev",
     "build": "next build",
+    "build:stage": "env-cmd -f .env.stage next build",
     "start": "next start",
+    "start:stage": "env-cmd -f .env.stage next start",
     "lint": "eslint"
   },
   "dependencies": {
